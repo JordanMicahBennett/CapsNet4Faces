@@ -332,6 +332,10 @@ class ModelTrafficSign(ModelBase):
         return loss, accuracy, predicted_class
 
 
+class FaceRec(ModelTrafficSign):
+    NB_LABELS = 158
+
+
 if __name__ == '__main__':
     model_traffic_sign = ModelTrafficSign("test", output_folder=None)
     model_traffic_sign.init()
