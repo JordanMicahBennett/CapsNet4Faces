@@ -17,6 +17,7 @@ from keras.preprocessing.image import ImageDataGenerator
 from PIL import Image
 from PIL import Image, ImageEnhance
 from docopt import docopt
+from sklearn.model_selection import train_test_split
 import tensorflow as tf
 import numpy as np
 import random
@@ -27,8 +28,7 @@ from model import FaceRec
 from data_handler import get_face_data
 
 
-BATCH_SIZE = 2
-DATASET_FOLDER = "dataset/"
+BATCH_SIZE = 10
 
 
 def train(ckpt=None, output=None):
@@ -108,14 +108,20 @@ def train(ckpt=None, output=None):
             plot_progression(b, cost, acc, "Train")
             plot_progression(b, cost_val, acc_val, "Validation")
 
-        # every 100 batch sizes, we check if the model should be saved or not based on
-        # cost_val.. just assume our test batches are good enough over time
-        # saves computation trying to calculate the entire validation dataset
+        # every 100 batch sizes, we check if the model should be saved based
+        # on if the model's loss on 30% of the test dataset
         if b % 100 == 0:
-            print("Current loss: %s Best loss: %s" % (cost_val, best_validation_loss))
-            if cost_val < best_validation_loss:
-                best_validation_loss = cost_val
+            # We decide whether to checkpoint based on 30% of the test dataset
+            # this is just to speed up computation
+            _, save_x_test, _, save_y_test = train_test_split(X_test, y_test,
+                                                              test_size=0.2,
+                                                              random_state=b)
+            loss, acc, _ = model.evaluate_dataset(save_x_test, save_y_test)
+            print("Current loss: %s Best loss: %s" % (loss, best_validation_loss))
+            if loss < best_validation_loss:
+                best_validation_loss = loss
                 model.save()
+            # as we get better result we do less augmentation
             augmented_factor = augmented_factor * decrease_factor
             print("Augmented Factor = %s" % augmented_factor)
 
