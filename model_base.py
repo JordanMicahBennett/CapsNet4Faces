@@ -314,7 +314,12 @@ class ModelBase(object):
         #self.sess.run(tf.global_variables_initializer())
 
         tensors = self.sess.run(tensors)[0]
-        tensors = json.loads(tensors)
+        try:
+            tensors = json.loads(tensors)
+        except TypeError:
+            log.warning('Trying to load tensor params with str method')
+            tensors = json.loads(tensors.decode('utf-8'))
+
         for tensor in tensors:
             try:
                 n_tensor = g.get_tensor_by_name(tensors[tensor])
@@ -323,7 +328,11 @@ class ModelBase(object):
             setattr(self, tensor, n_tensor)
 
         hyps = self.sess.run(hyps)[0]
-        hyps = json.loads(hyps)
+        try:
+            hyps = json.loads(hyps)
+        except:
+            hyps = json.loads(hyps.decode('utf-8'))
+
         for hyp in hyps:
             n_hyp = g.get_tensor_by_name(hyps[hyp])
             setattr(self.h, hyp, self.sess.run(n_hyp))
