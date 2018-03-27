@@ -27,7 +27,7 @@ from model import FaceRec
 from data_handler import get_face_data
 
 
-BATCH_SIZE = 5
+BATCH_SIZE = 2
 DATASET_FOLDER = "dataset/"
 
 
@@ -51,10 +51,9 @@ def train(ckpt=None, output=None):
 
         return np.array(img) / 255
 
-    X_train, y_train, X_valid, y_valid, X_test, y_test = get_face_data()
+    X_train, y_train, X_test, y_test = get_face_data()
 
     X_train = X_train / 255
-    X_valid = X_valid / 255
     X_test = X_test / 255
 
     train_datagen = ImageDataGenerator()
@@ -68,7 +67,6 @@ def train(ckpt=None, output=None):
     inference_datagen = ImageDataGenerator()
     train_datagen.fit(X_train)
     train_datagen_augmented.fit(X_train)
-    inference_datagen.fit(X_valid)
     inference_datagen.fit(X_test)
 
     # Utils method to print the current progression
@@ -85,37 +83,39 @@ def train(ckpt=None, output=None):
 
     # Training pipeline
     b = 0
-    valid_batch = inference_datagen.flow(X_valid, y_valid, batch_size=BATCH_SIZE)
-    best_validation_loss = None
+    best_validation_loss = float('inf')
     augmented_factor = 0.99
     decrease_factor = 0.80
     train_batches = train_datagen.flow(X_train, y_train, batch_size=BATCH_SIZE)
     augmented_train_batches = train_datagen_augmented.flow(X_train, y_train, batch_size=BATCH_SIZE)
+    valid_batch = inference_datagen.flow(X_test, y_test, batch_size=BATCH_SIZE)
 
     while True:
         next_batch = next(
             augmented_train_batches if random.uniform(0, 1) < augmented_factor else train_batches)
-        x_batch, y_batch = next_batch
 
         ### Training
+        x_batch, y_batch = next_batch
         cost, acc = model.optimize(x_batch, y_batch)
-        ### Validation
-        x_batch, y_batch = next(valid_batch, None)
+
+        ### Validation --> with test data
         # Retrieve the cost and acc on this validation batch and save it in tensorboard
+        x_batch, y_batch = next(valid_batch, None)
         cost_val, acc_val = model.evaluate(x_batch, y_batch, tb_test_save=True)
 
-        if b % 10 == 0: # Plot the last results
+        # Plot the last results
+        if b % 10 == 0:
             plot_progression(b, cost, acc, "Train")
             plot_progression(b, cost_val, acc_val, "Validation")
-        if b % 50 == 0: # Test the model on all the validation
-            print("Evaluate full validation dataset ...")
-            loss, acc, _ = model.evaluate_dataset(X_valid, y_valid)
-            print("Current loss: %s Best loss: %s" % (loss, best_validation_loss))
-            plot_progression(b, loss, acc, "TOTAL Validation")
-            model.save()
-            #if best_validation_loss is None or loss < best_validation_loss:
-            #    best_validation_loss = loss
-            #    model.save()
+
+        # every 100 batch sizes, we check if the model should be saved or not based on
+        # cost_val.. just assume our test batches are good enough over time
+        # saves computation trying to calculate the entire validation dataset
+        if b % 100 == 0:
+            print("Current loss: %s Best loss: %s" % (cost_val, best_validation_loss))
+            if cost_val < best_validation_loss:
+                best_validation_loss = cost_val
+                model.save()
             augmented_factor = augmented_factor * decrease_factor
             print("Augmented Factor = %s" % augmented_factor)
 
