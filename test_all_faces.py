@@ -34,19 +34,9 @@ def train(ckpt=None):
             *ckpt: (String) [Optional] Path to the ckpt file to restore
     """
 
-    def preprocessing_function(img):
-        """
-            Custom preprocessing_function
-        """
-        img = img * 255
-        img = Image.fromarray(img.astype('uint8'), 'RGB')
-        img = ImageEnhance.Brightness(img).enhance(random.uniform(0.6, 1.5))
-        img = ImageEnhance.Contrast(img).enhance(random.uniform(0.6, 1.5))
+    X_train, _, X_test, y_test = get_face_data()
 
-        return np.array(img) / 255
-
-    _, _, X_test, y_test = get_face_data()
-
+    import pdb ; pdb.set_trace()
     X_test = X_test / 255
 
     # Utils method to print the current progression
@@ -62,8 +52,11 @@ def train(ckpt=None):
         model.load(ckpt)
 
     print("Loaded model. Beginning to test the entire test dataset")
+    print("Size of error dataset: %s/%s" %(X_test.shape[0], (X_test.shape[0]+X_train.shape[0])))
+
     loss, acc, _ = model.evaluate_dataset(X_test, y_test)
     plot_progression(0, loss, acc, "Total Test Validation")
+
 
 if __name__ == '__main__':
     arguments = docopt(__doc__)
