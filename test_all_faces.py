@@ -63,7 +63,7 @@ def train(ckpt=None):
 
     print("Loaded model. Beginning to test the entire test dataset")
     loss, acc, _ = model.evaluate_dataset(X_test, y_test)
-    plot_progression(b, cost, acc, "Total Test Validation")
+    plot_progression(0, cost, acc, "Total Test Validation")
 
 if __name__ == '__main__':
     arguments = docopt(__doc__)
