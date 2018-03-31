@@ -61,6 +61,7 @@ def train(ckpt=None):
     else:
         model.load(ckpt)
 
+    print("Loaded model. Beginning to test the entire test dataset")
     loss, acc, _ = model.evaluate_dataset(X_test, y_test)
     plot_progression(b, cost, acc, "Total Test Validation")
 
