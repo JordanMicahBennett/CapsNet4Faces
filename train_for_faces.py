@@ -5,10 +5,11 @@
 Train the model.
 
 Usage:
-  train.py [<output>] [--ckpt=<ckpt>]
+  train.py [<output>] [--ckpt=<ckpt>] [--batch_size=<batch_size>]
 
 Options:
   -h --help     Show this help.
+  <batch_size>  Batch size to train on
   <output>      Ouput folder. By default: ./outputs/
   <ckpt>        Path to the checkpoints to restore
 """
@@ -31,7 +32,7 @@ from data_handler import get_face_data
 BATCH_SIZE = 10
 
 
-def train(ckpt=None, output=None):
+def train(batch_size=None, ckpt=None, output=None):
     """
         Train the model
         **input: **
@@ -39,17 +40,10 @@ def train(ckpt=None, output=None):
             *ckpt: (String) [Optional] Path to the ckpt file to restore
             *output: (String) [Optional] Path to the output folder to used. ./outputs/ by default
     """
-
-    def preprocessing_function(img):
-        """
-            Custom preprocessing_function
-        """
-        img = img * 255
-        img = Image.fromarray(img.astype('uint8'), 'RGB')
-        img = ImageEnhance.Brightness(img).enhance(random.uniform(0.6, 1.5))
-        img = ImageEnhance.Contrast(img).enhance(random.uniform(0.6, 1.5))
-
-        return np.array(img) / 255
+    if not batch_size:
+        batch_size = BATCH_SIZE
+    batch_size = int(batch_size)
+    #print("Batch size: %s" %(batch_size))
 
     X_train, y_train, X_test, y_test = get_face_data()
 
@@ -58,12 +52,9 @@ def train(ckpt=None, output=None):
 
     train_datagen = ImageDataGenerator()
     train_datagen_augmented = ImageDataGenerator(
-        rotation_range=20,
-        shear_range=0.2,
-        width_shift_range=0.2,
-        height_shift_range=0.2,
-        horizontal_flip=True,
-        preprocessing_function=preprocessing_function)
+        width_shift_range=0.1,
+        height_shift_range=0.1,
+        horizontal_flip=True)
     inference_datagen = ImageDataGenerator()
     train_datagen.fit(X_train)
     train_datagen_augmented.fit(X_train)
@@ -86,9 +77,9 @@ def train(ckpt=None, output=None):
     best_validation_loss = float('inf')
     augmented_factor = 0.99
     decrease_factor = 0.80
-    train_batches = train_datagen.flow(X_train, y_train, batch_size=BATCH_SIZE)
-    augmented_train_batches = train_datagen_augmented.flow(X_train, y_train, batch_size=BATCH_SIZE)
-    valid_batch = inference_datagen.flow(X_test, y_test, batch_size=BATCH_SIZE)
+    train_batches = train_datagen.flow(X_train, y_train, batch_size=batch_size)
+    augmented_train_batches = train_datagen_augmented.flow(X_train, y_train, batch_size=batch_size)
+    valid_batch = inference_datagen.flow(X_test, y_test, batch_size=batch_size)
 
     while True:
         next_batch = next(
@@ -129,4 +120,4 @@ def train(ckpt=None, output=None):
 
 if __name__ == '__main__':
     arguments = docopt(__doc__)
-    train(arguments["--ckpt"], arguments["<output>"])
+    train(arguments["--batch_size"], arguments["--ckpt"], arguments["<output>"])
