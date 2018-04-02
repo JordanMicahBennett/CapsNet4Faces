@@ -50,6 +50,14 @@ def train(batch_size=None, ckpt=None, output=None):
     X_train = X_train / 255
     X_test = X_test / 255
 
+    ## do a quick check on the number of labels expected by model
+    ## and number of models passed in
+    nb_labels_dataset = max(len(set(y_train)),
+                            len(set(y_test)))
+    if nb_labels_dataset != FaceRec.NB_LABELS:
+        print("Number of labels is mismatched.. can't train this way")
+        return
+
     train_datagen = ImageDataGenerator()
     train_datagen_augmented = ImageDataGenerator(
         width_shift_range=0.1,
