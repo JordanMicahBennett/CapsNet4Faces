@@ -112,7 +112,7 @@ def train(batch_size=None, ckpt=None, output=None):
 
             # Early stopping logic; if there is EARLY_STOPPING_COUNT
             # worth of consecutive accuracies of 100%, we stop
-            if acc == 1:
+            if acc == 1.0:
                 count -= 1
             else:
                 count = EARLY_STOPPING_COUNT
