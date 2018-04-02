@@ -16,9 +16,10 @@ from keras.preprocessing.image import ImageDataGenerator
 from PIL import Image
 from PIL import Image, ImageEnhance
 from PIL.PngImagePlugin import PngImageFile
+from PIL.JpegImagePlugin import JpegImageFile
 from docopt import docopt
 from sklearn.datasets import fetch_lfw_people
-#import tensorflow as tf
+import tensorflow as tf
 import numpy as np
 import random
 import pickle
@@ -60,7 +61,7 @@ def get_image_prediction(ckpt=None):
             print("Invalid File. Please try again")
             continue
 
-        if type(image) == PngImageFile:
+        if type(image) == PngImageFile or type(image) == JpegImageFile:
             image = image.resize((32, 32), Image.ANTIALIAS).convert('RGB')
             image = np.array(image)
             image  = image / 255
