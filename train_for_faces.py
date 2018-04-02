@@ -99,13 +99,13 @@ def train(batch_size=None, ckpt=None, output=None):
             plot_progression(b, cost, acc, "Train")
             plot_progression(b, cost_val, acc_val, "Validation")
 
-        # every 100 batch sizes, we check if the model should be saved based
-        # on if the model's loss on 30% of the test dataset
-        if b % 100 == 0:
+        # every 500 batch sizes, we check if the model should be saved based
+        # on if the model's loss on 80% of the test dataset
+        if b % 500 == 0:
             # We decide whether to checkpoint based on 30% of the test dataset
             # this is just to speed up computation
             _, save_x_test, _, save_y_test = train_test_split(X_test, y_test,
-                                                              test_size=0.2,
+                                                              test_size=0.8,
                                                               random_state=b)
             loss, acc, _ = model.evaluate_dataset(save_x_test, save_y_test)
             print("Current loss: %s Best loss: %s" % (loss, best_validation_loss))

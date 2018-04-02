@@ -45,7 +45,7 @@ def downsample_image(img):
     return np.array(img)
 
 def get_face_data():
-    people = fetch_lfw_people(color=True, min_faces_per_person=10)
+    people = fetch_lfw_people(color=True, min_faces_per_person=50)
     X_faces = people.images
     Y_faces = people.target
 
