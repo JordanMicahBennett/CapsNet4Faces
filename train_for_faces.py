@@ -43,7 +43,7 @@ def train(batch_size=None, ckpt=None, output=None):
     if not batch_size:
         batch_size = BATCH_SIZE
     batch_size = int(batch_size)
-    #print("Batch size: %s" %(batch_size))
+    print("Batch size: %s" %(batch_size))
 
     X_train, y_train, X_test, y_test = get_face_data()
 
@@ -101,23 +101,28 @@ def train(batch_size=None, ckpt=None, output=None):
         # Retrieve the cost and acc on this validation batch and save it in tensorboard
         x_batch, y_batch = next(valid_batch, None)
         cost_val, acc_val = model.evaluate(x_batch, y_batch, tb_test_save=True)
+        count = EARLY_STOPPING_COUNT
 
         # Plot the last results
         if b % 10 == 0:
             plot_progression(b, cost, acc, "Train")
             plot_progression(b, cost_val, acc_val, "Validation")
 
-            # Early stopping logic
-            if acc == 1.00:
-                EARLY_STOPPING_COUNT -= 1
+            # Early stopping logic; if there is EARLY_STOPPING_COUNT
+            # worth of consecutive accuracies of 100%, we stop
+            if acc == 1:
+                count -= 1
+            else:
+                count = EARLY_STOPPING_COUNT
 
-            if not EARLY_STOPPING_COUNT:
+            if not count:
                 print("model has hit 100% accuracy and met early stopping criteria")
                 model.save()
                 break
-        # every 500 batch sizes, we check if the model should be saved based
+
+        # every 100 batch sizes, we check if the model should be saved based
         # on if the model's loss on 80% of the test dataset
-        if b % 500 == 0:
+        if b % 100 == 0:
             # We decide whether to checkpoint based on 30% of the test dataset
             # this is just to speed up computation
             _, save_x_test, _, save_y_test = train_test_split(X_test, y_test,
