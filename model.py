@@ -334,7 +334,7 @@ class ModelTrafficSign(ModelBase):
 
 class FaceRec(ModelTrafficSign):
     from sklearn.datasets import fetch_lfw_people
-    people = fetch_lfw_people(color=True, min_faces_per_person = 10)
+    people = fetch_lfw_people(color=True, min_faces_per_person = 25)
 
     NB_LABELS = len(set(people.target))
 
