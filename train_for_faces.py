@@ -24,6 +24,7 @@ import numpy as np
 import random
 import pickle
 import os
+import sys
 
 from model import FaceRec
 from data_handler import get_face_data
@@ -40,6 +41,7 @@ def train(batch_size=None, ckpt=None, output=None):
             *ckpt: (String) [Optional] Path to the ckpt file to restore
             *output: (String) [Optional] Path to the output folder to used. ./outputs/ by default
     """
+    print(sys.version)
     if not batch_size:
         batch_size = BATCH_SIZE
     batch_size = int(batch_size)
