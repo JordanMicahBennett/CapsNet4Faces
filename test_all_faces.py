@@ -36,7 +36,6 @@ def train(ckpt=None):
 
     X_train, _, X_test, y_test = get_face_data()
 
-    import pdb ; pdb.set_trace()
     X_test = X_test / 255
 
     # Utils method to print the current progression
