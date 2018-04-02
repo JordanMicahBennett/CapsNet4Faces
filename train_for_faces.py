@@ -30,7 +30,7 @@ from data_handler import get_face_data
 
 
 BATCH_SIZE = 10
-
+EARLY_STOPPING_COUNT = 10
 
 def train(batch_size=None, ckpt=None, output=None):
     """
@@ -107,6 +107,14 @@ def train(batch_size=None, ckpt=None, output=None):
             plot_progression(b, cost, acc, "Train")
             plot_progression(b, cost_val, acc_val, "Validation")
 
+            # Early stopping logic
+            if acc == 1.00:
+                EARLY_STOPPING_COUNT -= 1
+
+            if not EARLY_STOPPING_COUNT:
+                print("model has hit 100% accuracy and met early stopping criteria")
+                model.save()
+                break
         # every 500 batch sizes, we check if the model should be saved based
         # on if the model's loss on 80% of the test dataset
         if b % 500 == 0:
