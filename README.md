@@ -1,6 +1,6 @@
-# Capsnet - Traffic sign classifier - Tensorflow
+# Face Classification with Capsule Network built in Tensorflow
 
-A Tensorflow implementation of CapsNet(Capsules Net) apply on the Labelled Faces in the Wild (LFW) dataset
+A Tensorflow implementation of CapsNet(Capsules Net) apply on the Labelled Faces in the Wild (LFW) dataset based on (thibo73800's Traffic Sign Classifier)[https://github.com/thibo73800/capsnet-traffic-sign-classifier]
 
 This implementation is based on this paper: <b>Dynamic Routing Between Capsules</b> (https://arxiv.org/abs/1710.09829) from Sara Sabour, Nicholas Frosst and Geoffrey E. Hinton.
 
