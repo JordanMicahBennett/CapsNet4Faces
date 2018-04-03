@@ -1,8 +1,8 @@
-# Face Classification with Capsule Network built in Tensorflow
+# Face Classification with Capsule Networks
 
-A Tensorflow implementation of CapsNet(Capsules Net) apply on the Labelled Faces in the Wild (LFW) dataset based on [thibo73800's Traffic Sign Classifier](https://github.com/thibo73800/capsnet-traffic-sign-classifier)
+A Tensorflow implementation of CapsNet(Capsules Net) apply on the Labelled Faces in the Wild (LFW) dataset based on [thibo73800's Traffic Sign Classifier](https://github.com/thibo73800/capsnet-traffic-sign-classifier).
 
-This implementation is based on this paper: <b>Dynamic Routing Between Capsules</b> (https://arxiv.org/abs/1710.09829) from Sara Sabour, Nicholas Frosst and Geoffrey E. Hinton.
+This implementation is based on the paper: <b>[Dynamic Routing Between Capsules](https://arxiv.org/abs/1710.09829)</b> by Sara Sabour, Nicholas Frosst and Geoffrey E. Hinton.
 
 The code for the CapsNet is located in the following file: <b>caps_net.py</b> while the whole model is created inside the <b>model.py</b> file. The two main methods used to build the CapsNet are  <b>conv_caps_layer</b> and <b>fully_connected_caps_layer</b>
 
@@ -40,6 +40,3 @@ In order to measure the accuracy and the loss on the Test dataset you need to us
 </ul>
 
 Checkpoints and tensorboard files are stored inside the <b>outputs</b> folder.
-
-
-
